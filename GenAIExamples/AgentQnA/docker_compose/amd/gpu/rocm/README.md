@@ -123,16 +123,42 @@ bash stop_agent_service_tgi_rocm.sh
 
 Key parameters are configured via environment variables set before running `docker compose up`.
 
-| Environment Variable                    | Description                                                                               | Default (Set Externally)                        |
-| :-------------------------------------- | :---------------------------------------------------------------------------------------- | :---------------------------------------------- |
-| `ip_address`                            | External IP address of the host machine. **Required.**                                    | `your_external_ip_address`                      |
-| `HF_TOKEN`                              | Your Hugging Face Hub token for model access. **Required.**                               | `your_huggingface_token`                        |
-| `VLLM_LLM_MODEL_ID`                     | Hugging Face model ID for the AgentQnA LLM. Configured within `compose.yaml` environment. | `Intel/neural-chat-7b-v3-3`                     |
-| `TOOLSET_PATH`                          | Local path to the tool Yaml file. Configured in `compose.yaml`.                           | `${WORKPATH}/../../../tools/`                   |
-| `CRAG_SERVER`                           | CRAG server URL. Derived from `ip_address` and port `8080`.                               | `http://${ip_address}:8080`                     |
-| `WORKER_AGENT_URL`                      | Worker agent URL. Derived from `ip_address` and port `9095`.                              | `http://${ip_address}:9095/v1/chat/completions` |
-| `SQL_AGENT_URL`                         | SQL agent URL. Derived from `ip_address` and port `9096`.                                 | `http://${ip_address}:9096/v1/chat/completions` |
-| `http_proxy` / `https_proxy`/`no_proxy` | Network proxy settings (if required).                                                     | `""`                                            |
+# Environment Variables for AgentQnA
+
+Below are the required environment variables for deploying AgentQnA. Set these in your `set_env.sh` (for TGI) or `set_env_vllm.sh` (for vLLM) before running the deployment scripts.
+
+| Variable Name                      | Description                                 | Example Value                                  |
+|------------------------------------|---------------------------------------------|------------------------------------------------|
+| HOST_IP                            | Host machine IP address                     | 127.0.0.1                                      |
+| AGENTQNA_LLM_MODEL_ID              | Hugging Face model ID for LLM               | Qwen/Qwen2.5-7B-Instruct-1M                    |
+| AGENTQNA_HUGGINGFACEHUB_API_TOKEN  | Hugging Face Hub token                      | your_hf_token                                  |
+| AGENTQNA_TGI_SERVICE_PORT          | TGI service port (TGI mode)                 | 18008                                          |
+| AGENTQNA_VLLM_SERVICE_PORT         | vLLM service port (vLLM mode)               | 18009                                          |
+| WORKER_RAG_AGENT_PORT              | RAG agent port                              | 9095                                           |
+| WORKER_SQL_AGENT_PORT              | SQL agent port                              | 9096                                           |
+| SUPERVISOR_REACT_AGENT_PORT        | Supervisor/react agent port                 | 9090                                           |
+| TOOLSET_PATH                       | Path to agent tool YAMLs                    | /root/ethanliu/LaunchPad/tools                 |
+| WORKDIR                            | Workspace root directory                    | /root/ethanliu/LaunchPad                       |
+| AGENTQNA_BACKEND_SERVICE_ENDPOINT  | AgentQnA backend endpoint                   | http://localhost:18009/v1/agentqna             |
+| temperature                        | LLM temperature parameter                   | 0.7                                            |
+| max_new_tokens                     | Max new tokens for LLM                      | 256                                            |
+| recursion_limit_worker             | Recursion limit for worker agent            | 5                                              |
+| recursion_limit_supervisor         | Recursion limit for supervisor agent        | 5                                              |
+| db_name                            | Name of the SQL database                    | Chinook                                        |
+| db_path                            | Path to the SQL database                    | /home/user/chinook-db/Chinook_Sqlite.sqlite    |
+| CRAG_SERVER                        | CRAG server URL                             | http://localhost:8080                          |
+| WORKER_AGENT_URL                   | Worker agent endpoint URL                   | http://localhost:9095/v1/chat/completions      |
+| SQL_AGENT_URL                      | SQL agent endpoint URL                      | http://localhost:9096/v1/chat/completions      |
+| LANGCHAIN_API_KEY                  | LangChain API key (if used)                 | (your key)                                     |
+| LANGCHAIN_TRACING_V2               | LangChain tracing flag (if used)            | ""                                             |
+| RETRIEVAL_TOOL_URL                 | Retrieval tool endpoint (if used)           | (set if needed)                                |
+
+**Note:**
+- Only set variables you actually use in your compose files and services.
+- Always source your environment file before running deployment scripts:
+  ```bash
+  source set_env_vllm.sh  # or set_env.sh
+  ```
 
 ## AgentQnA Docker Compose Files
 

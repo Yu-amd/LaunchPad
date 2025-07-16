@@ -26,6 +26,9 @@ services:
       - seccomp:unconfined
     ipc: host
     command: --model-id ${LLM_MODEL_ID} --max-input-length 4096 --max-total-tokens 8192
+    restart: unless-stopped
+    networks:
+      - rocm_default
 
   worker-rag-agent:
     image: ${REGISTRY:-opea}/agent:${TAG:-latest}
@@ -57,6 +60,9 @@ services:
       LANGCHAIN_TRACING_V2: ${LANGCHAIN_TRACING_V2}
       LANGCHAIN_PROJECT: "opea-worker-agent-service"
       port: 9095
+    restart: unless-stopped
+    networks:
+      - rocm_default
 
   worker-sql-agent:
     image: ${REGISTRY:-opea}/agent:${TAG:-latest}
@@ -86,6 +92,9 @@ services:
       http_proxy: ${http_proxy}
       https_proxy: ${https_proxy}
       port: 9096
+    restart: unless-stopped
+    networks:
+      - rocm_default
 
   supervisor-react-agent:
     image: ${REGISTRY:-opea}/agent:${TAG:-latest}
@@ -121,3 +130,10 @@ services:
       WORKER_AGENT_URL: ${WORKER_AGENT_URL}
       SQL_AGENT_URL: ${SQL_AGENT_URL}
       port: 9090
+    restart: unless-stopped
+    networks:
+      - rocm_default
+
+networks:
+  rocm_default:
+    driver: bridge
