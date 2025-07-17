@@ -1,177 +1,171 @@
-# Deploy AgentQnA on AMD GPU (ROCm)
+# AgentQnA Docker Compose Setup
 
-This document outlines the single node deployment process for a AgentQnA application utilizing the [GenAIComps](https://github.com/opea-project/GenAIComps.git) microservices on AMD GPU (ROCm) server. The steps include pulling Docker images, container deployment via Docker Compose, and service execution using microservices `agent`.
+This directory contains the Docker Compose configuration for running AgentQnA with AMD GPU support using ROCm.
 
-## Table of Contents
+## Quick Start
 
-1. [AgentQnA Quick Start Deployment](#agentqna-quick-start-deployment)
-2. [Configuration Parameters](#configuration-parameters)
-3. [AgentQnA Docker Compose Files](#agentqna-docker-compose-files)
-4. [Validate Services](#validate-services)
-5. [Conclusion](#conclusion)
+### Unified Management Script (Recommended)
 
-## AgentQnA Quick Start Deployment
-
-This section describes how to quickly deploy and test the AgentQnA service manually on AMD GPU (ROCm) server. The basic steps are:
-
-1. [Access the Code](#access-the-code)
-2. [Configure the Deployment Environment](#configure-the-deployment-environment)
-3. [Deploy the Services Using Docker Compose](#deploy-the-services-using-docker-compose)
-4. [Ingest Data into the Vector Database](#ingest-data-into-the-vector-database)
-5. [Cleanup the Deployment](#cleanup-the-deployment)
-
-### Access the Code
-
-Clone the GenAIExample repository and access the AgentQnA AMD GPU (ROCm) server Docker Compose files and supporting scripts:
+Use the unified `run_agentqna.sh` script for all operations:
 
 ```bash
-export WORKDIR=<your-work-directory>
-cd $WORKDIR
-git clone https://github.com/opea-project/GenAIExamples.git
-cd GenAIExamples/AgentQnA
-```
+# Interactive menu with all options
+./run_agentqna.sh menu
 
-Then checkout a released version, such as v1.4:
-
-```bash
-git checkout v1.4
-```
-
-### Configure the Deployment Environment
-
-```bash
-### Replace the string 'server_address' with your local server IP address
-export host_ip='server_address'
-### Replace the string 'your_huggingfacehub_token' with your HuggingFacehub repository access token.
-export HF_TOKEN='your_huggingfacehub_token'
-### Replace the string 'your_langchain_api_key' with your LANGCHAIN API KEY.
-export LANGCHAIN_API_KEY='your_langchain_api_key'
-export LANGCHAIN_TRACING_V2=""
-```
-
-### Deploy the Services Using Docker Compose
-
-#### If you use vLLM
-
-```bash
-cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash launch_agent_service_vllm_rocm.sh
-```
-
-#### If you use TGI
-
-```bash
-cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash launch_agent_service_tgi_rocm.sh
-```
-
-### Check the Deployment Status
-
-After launching agent services, check if all the containers launched via docker compose have started:
-
-#### If you use vLLM
-
-- dataprep-redis-server
-- doc-index-retriever-server
-- embedding-server
-- rag-agent-endpoint
-- react-agent-endpoint
-- redis-vector-db
-- reranking-tei-xeon-server
-- retriever-redis-server
-- sql-agent-endpoint
-- tei-embedding-server
-- tei-reranking-server
-- vllm-service
-
-#### If you use TGI
-
-- dataprep-redis-server
-- doc-index-retriever-server
-- embedding-server
-- rag-agent-endpoint
-- react-agent-endpoint
-- redis-vector-db
-- reranking-tei-xeon-server
-- retriever-redis-server
-- sql-agent-endpoint
-- tei-embedding-server
-- tei-reranking-server
-- tgi-service
-
----
-
-### Cleanup the Deployment
-
-To stop the containers associated with the deployment, execute the following command:
-
-#### If you use vLLM
-
-```bash
-cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash stop_agent_service_vllm_rocm.sh
-```
-
-#### If you use TGI
-
-```bash
-cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash stop_agent_service_tgi_rocm.sh
+# Or use direct commands:
+./run_agentqna.sh setup-tgi      # Setup TGI environment
+./run_agentqna.sh setup-vllm     # Setup vLLM environment
+./run_agentqna.sh start-tgi      # Start TGI services
+./run_agentqna.sh start-vllm     # Start vLLM services
+./run_agentqna.sh tgi-eval       # Run TGI evaluation
+./run_agentqna.sh vllm-eval      # Run vLLM evaluation
+./run_agentqna.sh compare-eval   # Compare TGI vs vLLM
 ```
 
 ## Configuration Parameters
 
 Key parameters are configured via environment variables set before running `docker compose up`.
 
-# Environment Variables for AgentQnA
+## Services
 
-Below are the required environment variables for deploying AgentQnA. Set these in your `set_env.sh` (for TGI) or `set_env_vllm.sh` (for vLLM) before running the deployment scripts.
+The following services are included for both TGI and vLLM configurations:
 
-| Variable Name                      | Description                                 | Example Value                                  |
-|------------------------------------|---------------------------------------------|------------------------------------------------|
-| HOST_IP                            | Host machine IP address                     | 127.0.0.1                                      |
-| AGENTQNA_LLM_MODEL_ID              | Hugging Face model ID for LLM               | Qwen/Qwen2.5-7B-Instruct-1M                    |
-| AGENTQNA_HUGGINGFACEHUB_API_TOKEN  | Hugging Face Hub token                      | your_hf_token                                  |
-| AGENTQNA_TGI_SERVICE_PORT          | TGI service port (TGI mode)                 | 18008                                          |
-| AGENTQNA_VLLM_SERVICE_PORT         | vLLM service port (vLLM mode)               | 18009                                          |
-| WORKER_RAG_AGENT_PORT              | RAG agent port                              | 9095                                           |
-| WORKER_SQL_AGENT_PORT              | SQL agent port                              | 9096                                           |
-| SUPERVISOR_REACT_AGENT_PORT        | Supervisor/react agent port                 | 9090                                           |
-| TOOLSET_PATH                       | Path to agent tool YAMLs                    | /root/ethanliu/LaunchPad/tools                 |
-| WORKDIR                            | Workspace root directory                    | /root/ethanliu/LaunchPad                       |
-| AGENTQNA_BACKEND_SERVICE_ENDPOINT  | AgentQnA backend endpoint                   | http://localhost:18009/v1/agentqna             |
-| temperature                        | LLM temperature parameter                   | 0.7                                            |
-| max_new_tokens                     | Max new tokens for LLM                      | 256                                            |
-| recursion_limit_worker             | Recursion limit for worker agent            | 5                                              |
-| recursion_limit_supervisor         | Recursion limit for supervisor agent        | 5                                              |
-| db_name                            | Name of the SQL database                    | Chinook                                        |
-| db_path                            | Path to the SQL database                    | /home/user/chinook-db/Chinook_Sqlite.sqlite    |
-| CRAG_SERVER                        | CRAG server URL                             | http://localhost:8080                          |
-| WORKER_AGENT_URL                   | Worker agent endpoint URL                   | http://localhost:9095/v1/chat/completions      |
-| SQL_AGENT_URL                      | SQL agent endpoint URL                      | http://localhost:9096/v1/chat/completions      |
-| LANGCHAIN_API_KEY                  | LangChain API key (if used)                 | (your key)                                     |
-| LANGCHAIN_TRACING_V2               | LangChain tracing flag (if used)            | ""                                             |
-| RETRIEVAL_TOOL_URL                 | Retrieval tool endpoint (if used)           | (set if needed)                                |
+### TGI Services (compose.yaml)
+- **Frontend**: React application (Port 5173)
+- **Backend**: FastAPI server (Port 8889)
+- **Retriever**: Vector search service (Port 7000)
+- **Redis**: Vector database (Port 6379)
+- **TGI**: Text Generation Inference (Port 80)
+- **Nginx**: Reverse proxy (Port 8080)
 
-**Note:**
-- Only set variables you actually use in your compose files and services.
-- Always source your environment file before running deployment scripts:
-  ```bash
-  source set_env_vllm.sh  # or set_env.sh
-  ```
+### vLLM Services (compose_vllm.yaml)
+- **Frontend**: React application (Port 5174)
+- **Backend**: FastAPI server (Port 8890)
+- **Retriever**: Vector search service (Port 7001)
+- **Redis**: Vector database (Port 6380)
+- **vLLM**: Vector Large Language Model (Port 18009)
+- **Nginx**: Reverse proxy (Port 8081)
 
-## AgentQnA Docker Compose Files
+## Port Configuration
 
-In the context of deploying a AgentQnA pipeline on an Intel® Xeon® platform, we can pick and choose different large language model serving frameworks. The table below outlines the various configurations that are available as part of the application. These configurations can be used as templates and can be extended to different components available in [GenAIComps](https://github.com/opea-project/GenAIComps.git).
+**Note**: The nginx port has been changed from 80 to 8080/8081 to avoid conflicts with common web servers like Caddy on remote nodes.
 
-| File                                     | Description                                                                                |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| [compose.yaml](./compose.yaml)           | Default compose file using tgi as serving framework                                        |
-| [compose_vllm.yaml](./compose_vllm.yaml) | The LLM serving framework is vLLM. All other configurations remain the same as the default |
+### TGI Configuration
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8889
+- Retriever API: http://localhost:7000
+- TGI API: http://localhost:80
+- Nginx Proxy: http://localhost:8080 (redirects to frontend)
 
-## Validate Services
+### vLLM Configuration
+- Frontend: http://localhost:5174
+- Backend API: http://localhost:8890
+- Retriever API: http://localhost:7001
+- vLLM API: http://localhost:18009
+- Nginx Proxy: http://localhost:8081 (redirects to frontend)
 
-### 1. Validate the vLLM/TGI Service
+## Scripts
+
+### `run_agentqna.sh` (Recommended)
+Unified management script for all AgentQnA operations:
+- **Environment Setup**: `setup-tgi`, `setup-vllm`, `setup-light`
+- **Service Management**: `start-tgi`, `start-vllm`, `stop-tgi`, `stop-vllm`
+- **Evaluation**: `tgi-eval`, `vllm-eval`, `compare-eval`, `quick-eval`, `full-eval`
+- **Monitoring**: `monitor-start`, `monitor-stop`
+- **Logs & Status**: `logs-tgi`, `logs-vllm`, `status`, `cleanup`
+- **Interactive Menu**: `menu` for easy navigation
+
+### `setup_remote_node.sh`
+Complete automated setup script for remote nodes that handles:
+- Environment validation
+- Port conflict detection
+- Virtual environment setup
+- Service startup
+- Basic testing
+
+### `fix_redis_index.sh`
+Fixes Redis index issues common on remote nodes with newer Docker images.
+
+### `quick_test_agentqna.sh`
+Tests the complete AgentQnA system.
+
+### `detect_issues.sh`
+Detects common issues on fresh remote node deployments.
+
+## Common Issues
+
+### 1. Port Conflicts
+If you encounter port conflicts (especially on port 80), the nginx port has been changed to 8080. If you need to change it back:
+
+```bash
+# Edit the relevant .env files to change NGINX_PORT back to 80
+# Or stop conflicting services like Caddy:
+sudo systemctl stop caddy
+```
+
+### 2. Redis Index Missing
+Newer Docker images require the Redis index to exist before the retriever service starts:
+
+```bash
+# Automated fix
+./fix_redis_index.sh
+
+# Manual fix
+docker exec agentqna-redis-vector-db redis-cli FT.CREATE rag-redis ON HASH PREFIX 1 doc: SCHEMA content TEXT WEIGHT 1.0 distance NUMERIC
+```
+
+### 3. HF Token Issues
+Ensure your Hugging Face token is properly formatted in the environment file:
+
+```bash
+# Correct format
+AGENTQNA_HUGGINGFACEHUB_API_TOKEN=hf_your_token_here  # Optional comment
+
+# Incorrect format (will truncate token)
+AGENTQNA_HUGGINGFACEHUB_API_TOKEN=hf_your_token_here#Optional comment
+```
+
+## Documentation
+
+For detailed setup instructions and troubleshooting, see:
+- [Remote Node Setup Guide](REMOTE_NODE_SETUP.md) - Comprehensive guide for remote deployments
+- [Troubleshooting Guide](REMOTE_NODE_SETUP.md#troubleshooting-commands) - Common issues and solutions
+
+## Development
+
+### Building Images
+```bash
+# TGI services
+docker compose -f compose.yaml build
+
+# vLLM services
+docker compose -f compose_vllm.yaml build
+```
+
+### Viewing Logs
+```bash
+# All TGI services
+docker compose -f compose.yaml logs -f
+
+# All vLLM services
+docker compose -f compose_vllm.yaml logs -f
+
+# Specific service
+docker compose -f compose.yaml logs -f backend-server
+docker compose -f compose_vllm.yaml logs -f backend-server
+```
+
+### Stopping Services
+```bash
+# TGI services
+docker compose -f compose.yaml down
+
+# vLLM services
+docker compose -f compose_vllm.yaml down
+
+# All services (using unified script)
+./run_agentqna.sh cleanup
+```
 
 #### If you use vLLM:
 
