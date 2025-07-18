@@ -54,14 +54,14 @@ export LANGCHAIN_TRACING_V2=""
 
 ```bash
 cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash launch_agent_service_vllm_rocm.sh
+./run_agentqna.sh start-vllm
 ```
 
 #### If you use TGI
 
 ```bash
 cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash launch_agent_service_tgi_rocm.sh
+./run_agentqna.sh start-tgi
 ```
 
 ### Check the Deployment Status
@@ -104,14 +104,14 @@ To stop the containers associated with the deployment, execute the following com
 
 ```bash
 cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash stop_agent_service_vllm_rocm.sh
+./run_agentqna.sh stop-vllm
 ```
 
 #### If you use TGI
 
 ```bash
 cd GenAIExamples/AgentQnA/docker_compose/amd/gpu/rocm
-bash stop_agent_service_tgi_rocm.sh
+./run_agentqna.sh stop-tgi
 ```
 
 ## Configuration Parameters
