@@ -2,6 +2,17 @@
 
 This directory contains the Docker Compose configuration for running AgentQnA with AMD GPU support using ROCm.
 
+## Tested Hardware
+
+The deployment scripts have been validated on the following ROCm-enabled GPUs:
+
+| GPU Model      | ROCm Version | Notes |
+|----------------|--------------|-------|
+| MI300A (8-GPU) | 6.4.1        | Production cluster – tensor parallel (8-way) |
+| Radeon RX 7900 XTX | 6.4.1 | Single-GPU workstation |
+
+> The stack should run on any GPU supported by ROCm ≥ 6.1, but performance characteristics will vary.
+
 ## Quick Start
 
 ### Unified Management Script (Recommended)

@@ -1,6 +1,41 @@
 # Deploy AgentQnA on AMD GPU (ROCm)
 
-This document outlines the single node deployment process for an AgentQnA application utilizing the GenAIComps microservices on AMD GPU (ROCm) server. The steps include pulling Docker images, container deployment via Docker Compose, and service execution using microservices agent.
+This document outlines the single-node deployment process for an AgentQnA application utilizing the GenAIComps micro-services on an AMD GPU (ROCm) server. The steps include pulling Docker images, container deployment via Docker Compose, and service execution using the AgentQnA micro-services.
+
+## Background & High-Level Architecture
+
+AgentQnA is a multi-tool, retrieval-augmented reasoning agent derived from the OPEA project. It couples several specialised sub-agents (RAG, SQL and ReAct) with a language-model back-end (vLLM or TGI) to answer heterogeneous user questions with minimal hallucination.
+
+The end-to-end data flow is shown below.
+
+```text
+┌──────────────┐      ┌────────────────────┐     ┌────────────────────────┐
+│  User Query  │ ───► │  Supervisor Agent  │ ───► │  Tool Invocation / RAG │
+└──────────────┘      └─────────┬──────────┘     └────────────┬───────────┘
+                                │                             │
+                        ┌───────▼─────────┐     ┌─────────────▼─────────┐
+                        │  Worker RAG     │     │   Worker SQL Agent    │
+                        │  (LangChain)    │     │  (Table QA)           │
+                        └───────┬─────────┘     └─────────────┬─────────┘
+                                │                             │
+                         ┌──────▼─────┐               ┌───────▼─────┐
+                         │  Retriever │               │  Postgres   │
+                         │ (Redis-IVF)│               │  or SQLite  │
+                         └──────┬─────┘               └─────────────┘
+                                │
+                      ┌─────────▼─────────┐
+                      │    vLLM / TGI     │  (LLM inference on ROCm GPUs)
+                      └────────────────────┘
+```
+
+Key points:
+
+* **vLLM (ROCm 6.4.1)** provides fast GPT-style decoding with Mi-GPU tensor-parallelism.
+* **Redis Vector** stores embeddings generated at ingestion time and serves similarity search during retrieval.
+* **Prometheus + Grafana** (optional) expose GPU utilisation, token throughput and cache hit-rates.
+* All services are orchestrated via **Docker Compose** and can be launched with one-liner helper scripts.
+
+The remainder of this tutorial focuses on deploying the vLLM-backed stack, validating the agent endpoints, and benchmarking performance.
 
 ## Table of Contents
 - [AgentQnA Quick Start Deployment](#agentqna-quick-start-deployment)
