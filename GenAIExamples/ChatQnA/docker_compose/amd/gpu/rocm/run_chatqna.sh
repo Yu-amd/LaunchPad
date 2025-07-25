@@ -857,6 +857,24 @@ check_status() {
     detect_services
 }
 
+# Function to check vLLM service status only
+check_vllm_status() {
+    print_header "vLLM Service Status"
+    check_docker
+    
+    print_status "vLLM Services:"
+    docker compose -f compose_vllm.yaml ps
+    
+    echo ""
+    VLLM_RUNNING=$(docker ps --format "{{.Names}}" | grep -q "chatqna-vllm-service" && echo "yes" || echo "no")
+    
+    if [ "$VLLM_RUNNING" = "yes" ]; then
+        print_status "vLLM services are running (port 8890)"
+    else
+        print_warning "vLLM services are not currently running"
+    fi
+}
+
 # Function to clean up
 cleanup() {
     print_header "Cleaning Up All Services"
@@ -914,7 +932,7 @@ show_help() {
     echo "  17) logs-tgi       - Show TGI service logs"
     echo "  18) logs-vllm      - Show vLLM service logs"
     echo "  19) monitor-logs   - Show monitoring logs"
-    echo "  20) status         - Check all service status"
+    echo "  20) status         - Check vLLM service status"
     echo "  21) cleanup        - Clean up all services"
     echo "  22) menu           - Show interactive menu"
     echo "  23) help           - Show this help"
@@ -964,7 +982,7 @@ show_menu() {
         echo "19. Show TGI Logs"
         echo "20. Show vLLM Logs"
         echo "21. Show Monitoring Logs"
-        echo "22. Check Service Status"
+        echo "22. Check vLLM Service Status"
         echo "23. Cleanup All Services"
         echo "24. Help"
         echo "25. Exit"
@@ -993,7 +1011,7 @@ show_menu() {
             19) show_tgi_logs ;;
             20) show_vllm_logs ;;
             21) show_monitoring_logs ;;
-            22) check_status ;;
+            22) check_vllm_status ;;
             23) cleanup ;;
             24) show_help ;;
             25) print_status "Goodbye!"; exit 0 ;;
@@ -1051,7 +1069,7 @@ main() {
         "logs-tgi") show_tgi_logs ;;
         "logs-vllm") show_vllm_logs ;;
         "monitor-logs") show_monitoring_logs ;;
-        "status") check_status ;;
+        "status") check_vllm_status ;;
         "cleanup") cleanup ;;
         "menu") show_menu ;;
         "help"|"-h"|"--help") show_help ;;
