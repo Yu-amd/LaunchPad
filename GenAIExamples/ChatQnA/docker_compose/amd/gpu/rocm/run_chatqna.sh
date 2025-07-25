@@ -314,7 +314,6 @@ try:
             print(f'📝 Avg Response Length: {quality.get(\"avg_response_length\", \"N/A\"):.0f} chars')
         
         print(f'📊 Full results: $EVAL_RESULTS_DIR/chatqna_tgi_eval.json')
-        print(f'🌐 Access UI: http://localhost:5173')
 except Exception as e:
     print('❌ Error reading results:', str(e))
 "
@@ -408,7 +407,6 @@ try:
             print(f'📝 Avg Response Length: {quality.get(\"avg_response_length\", \"N/A\"):.0f} chars')
         
         print(f'📊 Full results: $EVAL_RESULTS_DIR/chatqna_vllm_eval.json')
-        print(f'🌐 Access UI: http://localhost:${CHATQNA_FRONTEND_SERVICE_PORT:-5174}')
 except Exception as e:
     print('❌ Error reading results:', str(e))
 "
