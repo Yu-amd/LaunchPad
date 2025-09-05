@@ -1,4 +1,4 @@
-#!/root/ethanliu/LaunchPad/GenAIEval/opea_eval_env/bin/python3
+#!/root/LaunchPad/GenAIEval/opea_eval_env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

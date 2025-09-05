@@ -129,6 +129,9 @@ start_tgi_services() {
     check_docker
     check_requirements
     
+    print_status "Setting up TGI environment variables..."
+    source set_env.sh
+    
     print_status "Starting TGI services with docker compose..."
     docker compose -f compose.yaml up -d
     
@@ -140,6 +143,9 @@ start_vllm_services() {
     print_header "Starting AgentQnA vLLM Services"
     check_docker
     check_requirements
+    
+    print_status "Setting up vLLM environment variables..."
+    source set_env_vllm.sh
     
     print_status "Starting vLLM services with docker compose..."
     docker compose -f compose_vllm.yaml up -d

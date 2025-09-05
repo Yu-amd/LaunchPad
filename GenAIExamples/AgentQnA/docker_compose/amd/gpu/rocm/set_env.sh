@@ -18,8 +18,8 @@ export WORKER_SQL_AGENT_PORT=7002
 export SUPERVISOR_REACT_AGENT_PORT=7003
 
 # Toolset and Workdir
-export TOOLSET_PATH="/root/ethanliu/LaunchPad/tools"  # Set to your tools dir
-export WORKDIR="/root/ethanliu/LaunchPad"  # Set to your workspace root
+export TOOLSET_PATH="/root/GenAIExamples/AgentQnA/tools"  # Set to your tools dir
+export WORKDIR="/root/GenAIExamples/AgentQnA"  # Set to your workspace root
 
 # AgentQnA Backend Endpoint
 export AGENTQNA_BACKEND_SERVICE_ENDPOINT="http://localhost:${AGENTQNA_TGI_SERVICE_PORT}/v1/agentqna"

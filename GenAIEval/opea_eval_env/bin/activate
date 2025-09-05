@@ -39,10 +39,10 @@ deactivate nondestructive
 if [ "${OSTYPE:-}" = "cygwin" ] || [ "${OSTYPE:-}" = "msys" ] ; then
     # transform D:\path\to\venv to /d/path/to/venv on MSYS
     # and to /cygdrive/d/path/to/venv on Cygwin
-    export VIRTUAL_ENV=$(cygpath /root/ethanliu/LaunchPad/GenAIEval/opea_eval_env)
+    export VIRTUAL_ENV=$(cygpath /root/LaunchPad/GenAIEval/opea_eval_env)
 else
     # use the path as-is
-    export VIRTUAL_ENV=/root/ethanliu/LaunchPad/GenAIEval/opea_eval_env
+    export VIRTUAL_ENV=/root/LaunchPad/GenAIEval/opea_eval_env
 fi
 
 _OLD_VIRTUAL_PATH="$PATH"
