@@ -105,8 +105,8 @@ setup_vllm_environment() {
     check_docker
     check_requirements
     
-    print_status "Setting up vLLM environment variables..."
-    source set_env_vllm.sh
+    print_status "vLLM environment variables are already set by .env file"
+    print_status "No additional environment setup needed"
     
     print_status "vLLM environment setup complete!"
 }
@@ -144,8 +144,8 @@ start_vllm_services() {
     check_docker
     check_requirements
     
-    print_status "Setting up vLLM environment variables..."
-    source set_env_vllm.sh
+    print_status "vLLM environment variables are already set by .env file"
+    print_status "No additional environment setup needed"
     
     print_status "Starting vLLM services with docker compose..."
     docker compose -f compose_vllm.yaml up -d
@@ -336,8 +336,8 @@ run_vllm_eval() {
     
     print_status "Setting up vLLM evaluation environment..."
     
-    # Source vLLM environment variables
-    source set_env_vllm.sh
+    # vLLM environment variables are already set by .env file
+    print_status "Using environment variables from .env file"
     
     # Check if vLLM services are running
     if ! docker ps --format "table {{.Names}}" | grep -q "agentqna-vllm-service"; then
@@ -613,8 +613,8 @@ run_vllm_benchmark() {
     
     print_status "Setting up vLLM benchmark environment..."
     
-    # Source vLLM environment variables
-    source set_env_vllm.sh
+    # vLLM environment variables are already set by .env file
+    print_status "Using environment variables from .env file"
     
     # Check if vLLM services are running
     if ! docker ps --format "{{.Names}}" | grep -q "agentqna-vllm-service"; then
@@ -853,8 +853,8 @@ check_status() {
     docker compose -f compose.yaml ps
     
     echo ""
-    print_status "vLLM Services:"
-    source set_env_vllm.sh 2>/dev/null || true
+    # vLLM environment variables are already set by .env file
+    # source set_env_vllm.sh 2>/dev/null || true
     docker compose -f compose_vllm.yaml ps
     
     echo ""
