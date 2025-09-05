@@ -3,8 +3,9 @@
 services:
   vllm-service:
     # Updated to latest ROCm vLLM container as per review comments
-    image: rocm/vllm:6.4.1
+    image: rocm/vllm:latest
     container_name: agentqna-vllm-service
+    entrypoint: ["python", "-m", "vllm.entrypoints.openai.api_server"]
     ports:
       - "${AGENTQNA_VLLM_SERVICE_PORT:-18009}:8011"
     environment:
@@ -29,7 +30,7 @@ services:
     security_opt:
       - seccomp:unconfined
       - apparmor=unconfined
-    command: "--model ${AGENTQNA_LLM_MODEL_ID} --swap-space 16 --disable-log-requests --dtype float16 --tensor-parallel-size 1 --host 0.0.0.0 --port 8011 --num-scheduler-steps 1 --distributed-executor-backend \"mp\" --max-model-len 4096"
+        command: "--model ${AGENTQNA_LLM_MODEL_ID} --swap-space 16 --disable-log-requests --dtype float16 --tensor-parallel-size 1 --host 0.0.0.0 --port 8011 --num-scheduler-steps 1 --distributed-executor-backend mp --max-model-len 4096"
     ipc: host
     restart: unless-stopped
     networks:
