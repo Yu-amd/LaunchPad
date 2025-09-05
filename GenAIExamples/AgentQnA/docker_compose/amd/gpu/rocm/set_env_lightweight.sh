@@ -8,7 +8,7 @@
 export HOST_IP=$(hostname -I | awk '{print $1}')
 
 # Model and HuggingFace
-export AGENTQNA_LLM_MODEL_ID="Qwen/Qwen2.5-7B-Instruct-1M"  # or your model
+export AGENTQNA_LLM_MODEL_ID="teknium/OpenHermes-2.5-Mistral-7B"  # or your model
 export AGENTQNA_HUGGINGFACEHUB_API_TOKEN=""  # Fill in your HF token
 
 # Ports (minimal set for lightweight)
