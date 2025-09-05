@@ -849,10 +849,12 @@ check_status() {
     check_docker
     
     print_status "TGI Services:"
+    source set_env.sh 2>/dev/null || true
     docker compose -f compose.yaml ps
     
     echo ""
     print_status "vLLM Services:"
+    source set_env_vllm.sh 2>/dev/null || true
     docker compose -f compose_vllm.yaml ps
     
     echo ""
